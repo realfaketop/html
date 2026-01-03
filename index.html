@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -6,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     
-    <title>RF-TOP</title>
+    <title>RF-TOP | 留言墙</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* ==========================================
+           赛博朋克风格样式
+           ========================================== */
         :root { 
             --bg-deep: #030303; 
             --bg-panel: #0a0a0a;
@@ -40,7 +42,6 @@
             background-size: 100% 4px;
         }
         
-        /* 科技边框容器 */
         .tech-border {
             position: relative;
             background: rgba(10, 10, 10, 0.8);
@@ -52,7 +53,6 @@
         .tech-border::before { content: ''; position: absolute; top: -1px; left: -1px; width: 8px; height: 8px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); border-top-left-radius: 4px; }
         .tech-border::after { content: ''; position: absolute; bottom: -1px; right: -1px; width: 8px; height: 8px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); border-bottom-right-radius: 4px; }
 
-        /* 按钮样式 */
         .cyber-btn {
             position: relative;
             background: rgba(255,255,255,0.03);
@@ -87,7 +87,6 @@
         }
         .submit-trigger:disabled { opacity: 0.3; cursor: not-allowed; border-color: #333; color: #555; background: none; }
 
-        /* 视频容器 */
         .monitor-frame {
             position: relative; width: 100%; height: 100%; background: #000; border: 1px solid #333;
             border-radius: 4px; overflow: hidden;
@@ -104,31 +103,22 @@
         }
         .bili-full { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-        /* === 侧边评论把手 === */
         #comm-handle {
-            position: fixed; 
-            right: 0; 
-            top: 50%; 
-            transform: translateY(-50%);
-            width: 36px; 
-            height: 160px;
+            position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+            width: 36px; height: 160px;
             background: rgba(5, 10, 15, 0.95);
-            border: 1px solid var(--tech-blue); 
-            border-right: none; 
+            border: 1px solid var(--tech-blue); border-right: none; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; z-index: 50; 
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: -2px 0 15px rgba(0, 240, 255, 0.15);
-            border-top-left-radius: 8px;
-            border-bottom-left-radius: 8px;
+            border-top-left-radius: 8px; border-bottom-left-radius: 8px;
         }
-        
         #comm-handle:hover {
             background: rgba(0, 240, 255, 0.15);
             box-shadow: -4px 0 25px rgba(0, 240, 255, 0.3);
             width: 44px;
         }
-
         #comm-handle.hidden-handle {
             transform: translate(100%, -50%); opacity: 0; pointer-events: none;
         }
@@ -140,18 +130,13 @@
         }
         #comm-handle:hover .comm-text { color: var(--tech-blue); text-shadow: 0 0 8px var(--tech-blue); }
         
-        /* === 评论抽屉 === */
         #comment-drawer {
-            position: absolute; 
-            inset: 0; 
-            background: #050505;
-            z-index: 40; 
-            transform: translateX(105%); 
+            position: absolute; inset: 0; background: #050505;
+            z-index: 40; transform: translateX(105%); 
             transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             display: flex; flex-direction: column;
             border: 1px solid var(--tech-blue);
-            border-radius: 12px;
-            overflow: hidden;
+            border-radius: 12px; overflow: hidden;
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
         }
         #comment-drawer.open { transform: translateX(0); }
@@ -164,18 +149,14 @@
         }
         .cyber-input:focus { outline: none; border-color: var(--tech-blue); box-shadow: 0 0 10px rgba(0,240,255,0.2); }
 
-        /* 手机端适配 */
         @media (max-width: 1024px) {
-            #comment-drawer {
-                transform: translateY(105%);
-            }
+            #comment-drawer { transform: translateY(105%); }
             #comment-drawer.open { transform: translateY(0); }
             .right-panel-container { padding-right: 0 !important; }
         }
 
         .nav-link:hover { color: var(--tech-blue); text-shadow: 0 0 5px var(--tech-blue); }
         .nav-link i { margin-right: 4px; }
-
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden relative selection:bg-green-500 selection:text-black">
@@ -191,16 +172,11 @@
         </div>
         
         <div class="hidden md:flex gap-6 text-[10px] font-mono text-gray-500 tracking-wider">
+            <a href="/" class="nav-link transition"><i class="fas fa-home"></i>HOME</a>
             <a href="https://github.com/feeday" target="_blank" class="nav-link transition"><i class="fab fa-github"></i>GITHUB</a>
             <a href="https://www.bilibili.com/" target="_blank" class="nav-link transition"><i class="fab fa-bilibili"></i>BILIBILI</a> 
             <a href="https://huggingface.co/spaces?category=video-generation&sort=likes" target="_blank" class="nav-link transition"><i class="fas fa-smile"></i>HUGGINGFACE</a>
             <a href="https://arxiv.org/list/cs.AI/recent" target="_blank" class="nav-link transition"><i class="fas fa-book"></i>ARXIV</a>
-            <a href="https://matrix.tencent.com/ai-detect/" target="_blank" class="nav-link transition" title="Zhuque AI Detection"><i class="fas fa-shield-alt"></i>MATRIX</a>
-            <a href="https://artificialanalysis.ai/image/leaderboard/editing" target="_blank" class="nav-link transition" title="Image Editing Leaderboard"><i class="fas fa-ranking-star"></i>MODEL-I2I</a>
-            <a href="https://aigcarena.com/" target="_blank" class="nav-link transition" title="MagicArena"><i class="fas fa-bolt"></i>MODEL-PK</a>
-            <a href="https://mixboard.google.com/" target="_blank" class="nav-link transition" title="Nano Banana Pro"><i class="fas fa-wand-magic-sparkles"></i>Banana-Pro</a>
-          <a href="https://gemini.google.com/" target="_blank" class="nav-link transition" title="Gemini">
-    <i class="fas fa-robot"></i>Gemini</a>
         </div>
 
         <div class="text-[10px] font-mono text-gray-500 flex items-center gap-2">
@@ -220,9 +196,7 @@
                        class="flex items-center gap-2 px-2 py-1 bg-black/80 border border-gray-700 rounded text-[10px] font-mono text-gray-400 hover:text-[#00f0ff] hover:border-[#00f0ff] transition backdrop-blur-sm group">
                         <i class="fab fa-bilibili"></i>
                         <span>SOURCE</span>
-                        <i class="fas fa-external-link-alt text-[8px] opacity-50 group-hover:opacity-100"></i>
                     </a>
-                 
                 </div>
 
                 <div class="monitor-overlay"></div>
@@ -234,7 +208,7 @@
                 </div>
 
                 <div id="result-overlay" class="absolute inset-0 z-30 bg-black/90 hidden flex-col items-center justify-center backdrop-blur-md">
-                    <h1 id="overlay-status" class="text-6xl font-[Orbitron] font-black mb-2 tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500"></h1>
+                    <h1 id="overlay-status" class="text-6xl font-[Orbitron] font-black mb-2 tracking-widest"></h1>
                     <div id="overlay-detail" class="text-xl font-mono mb-8 text-center text-gray-400"></div>
                     
                     <div class="tech-border p-6 max-w-md w-full text-left mb-8 bg-black/50">
@@ -315,17 +289,22 @@
                 </div>
                 
                 <div class="p-4 border-t border-gray-800 bg-black shrink-0">
-                    <div class="mb-3">
-                        <label class="text-[10px] text-gray-500 font-mono mb-1 block">AGENT_ID</label>
-                        <input type="text" id="username" placeholder="Anonymous" class="cyber-input px-2 py-1 text-xs" maxlength="15">
-                    </div>
-                    <div class="mb-3">
-                        <label class="text-[10px] text-gray-500 font-mono mb-1 block">MESSAGE_PACKET</label>
-                        <textarea id="message" placeholder="Input data..." class="cyber-input p-2 text-xs h-20 resize-none"></textarea>
-                    </div>
-                    <button onclick="postComment()" id="send-btn" class="cyber-btn w-full py-2 text-xs border-[#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black">
-                        TRANSMIT
-                    </button>
+                    <form id="cyber-form" onsubmit="event.preventDefault(); postComment();">
+                        <div class="mb-3">
+                            <label class="text-[10px] text-gray-500 font-mono mb-1 block">AGENT_ID</label>
+                            <input type="text" id="username" name="username" placeholder="Anonymous" class="cyber-input px-2 py-1 text-xs" maxlength="15" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-[10px] text-gray-500 font-mono mb-1 block">MESSAGE_PACKET</label>
+                            <textarea id="message" name="content" placeholder="Input data..." class="cyber-input p-2 text-xs h-20 resize-none" required></textarea>
+                        </div>
+                        
+                        <input type="hidden" name="csrf" value="">
+                        
+                        <button type="submit" id="send-btn" class="cyber-btn w-full py-2 text-xs border-[#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black">
+                            TRANSMIT
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -339,10 +318,12 @@
     </div>
 
     <script>
+        // ⭐⭐ 关键修改：指向 cpuck.com 的 API ⭐⭐
+        const API_BASE = "https://cpuck.com/video/api";
+
         const database = [
             { id: '01', src: 'BV1Y34y1X7CK', video_status: 'real', audio_status: 'real', source_video: 'Real MV', source_audio: 'Real Audio', desc: 'GEM邓紫棋《光年之外》-2018年NASA颁奖典礼' },
             { id: '02', src: 'BV1My2YBsEcJ', video_status: 'fake', audio_status: 'fake', source_video: 'Hailuo-2.6', source_audio: 'Hailuo-2.6', desc: '可灵2.6-画面都是合成' }
-          
         ];
 
         let currentIndex = 0;
@@ -369,10 +350,8 @@
             currentIndex = index;
             const currentData = database[currentIndex];
             
-            // 更新页码
             document.getElementById('page-indicator').innerText = `${String(index + 1).padStart(2, '0')} / ${String(database.length).padStart(2, '0')}`;
             
-            // 重置状态
             document.getElementById('result-overlay').classList.add('hidden');
             document.getElementById('result-overlay').classList.remove('flex');
             document.querySelectorAll('.cyber-btn').forEach(b => b.classList.remove('active-real', 'active-fake'));
@@ -380,13 +359,11 @@
             userSelection = { video: null, audio: null };
             updateSubmitButton();
             
-            // === 核心逻辑：更新跳转按钮链接 ===
             const sourceBtn = document.getElementById('bili-source-btn');
             if (sourceBtn) {
                 sourceBtn.href = `https://www.bilibili.com/video/${currentData.src}`;
             }
 
-            // 更新播放器
             const container = document.getElementById('video-container');
             container.innerHTML = `<iframe src="//player.bilibili.com/player.html?bvid=${currentData.src}&page=1&high_quality=1&danmaku=0&autoplay=1" class="bili-full" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe>`;
         }
@@ -449,7 +426,9 @@
             overlay.classList.add('flex');
         }
 
-        // 评论区开关逻辑
+        // ==========================================
+        // 留言板逻辑
+        // ==========================================
         function toggleDrawer() {
             const drawer = document.getElementById('comment-drawer');
             const handle = document.getElementById('comm-handle');
@@ -464,66 +443,94 @@
             }
         }
 
+        function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
         async function loadComments() {
             const list = document.getElementById('comment-list');
+            
+            if (list.innerHTML.includes('ESTABLISHING')) {
+                 list.innerHTML = '<div class="text-center text-gray-600 text-xs mt-10 font-mono animate-pulse">DOWNLOADING PACKETS...</div>';
+            }
+
             try {
-                // 注意：这里需要你后端的 PHP API 支持
-                const res = await fetch('api/get_comments.php');
+                // ⭐ 使用绝对路径跨域请求 PHP 接口
+                const res = await fetch(`${API_BASE}/messages_list.php?page=1&approved=1`, {
+                     credentials: "include" 
+                });
                 const json = await res.json();
                 
-                if (json.status === 'success') {
+                if (json.ok) {
                     list.innerHTML = '';
-                    if (json.data.length === 0) {
+                    const items = json.data.items;
+
+                    if (!items || items.length === 0) {
                         list.innerHTML = '<div class="text-center text-gray-600 text-xs mt-10 font-mono">NO LOGS FOUND</div>';
                         return;
                     }
-                    json.data.forEach(item => {
+                    
+                    items.forEach(item => {
                         const div = document.createElement('div');
                         div.className = 'mb-4 border-l border-gray-700 pl-3 pb-1 hover:border-[#00f0ff] transition-colors group';
                         div.innerHTML = `
                             <div class="flex justify-between items-baseline mb-1">
-                                <span class="text-xs font-bold text-gray-400 group-hover:text-[#00f0ff] font-[Orbitron]">${item.username}</span>
+                                <span class="text-xs font-bold text-gray-400 group-hover:text-[#00f0ff] font-[Orbitron]">${escapeHtml(item.username)}</span>
                                 <span class="text-[10px] text-gray-700 font-mono">${timeAgo(item.created_at)}</span>
                             </div>
-                            <div class="text-xs text-gray-300 break-words font-mono leading-relaxed opacity-80">${item.content}</div>
+                            <div class="text-xs text-gray-300 break-words font-mono leading-relaxed opacity-80">${escapeHtml(item.content)}</div>
                         `;
                         list.appendChild(div);
                     });
+                } else {
+                    list.innerHTML = `<div class="text-red-500 text-xs font-mono text-center">ERROR: ${json.error}</div>`;
                 }
             } catch (err) {
-                // 演示模式下显示模拟数据
-                if(list.innerHTML.includes('ESTABLISHING')) {
-                     list.innerHTML = '<div class="text-yellow-600 text-xs font-mono text-center">DEMO MODE: API DISCONNECTED</div>';
-                }
+                console.error(err);
+                list.innerHTML = '<div class="text-red-600 text-xs font-mono text-center">CONNECTION LOST</div>';
             }
         }
 
         async function postComment() {
-            const user = document.getElementById('username').value.trim() || 'Agent';
-            const msg = document.getElementById('message').value.trim();
+            const userBox = document.getElementById('username');
+            const msgBox = document.getElementById('message');
             const btn = document.getElementById('send-btn');
             
-            if (!msg) return;
+            if (!msgBox.value.trim()) return;
             
             btn.innerHTML = 'TRANSMITTING...';
             btn.disabled = true;
             
+            const form = document.getElementById('cyber-form');
+            const fd = new FormData(form); 
+
             try {
-                const res = await fetch('api/post_comment.php', {
+                // ⭐ 使用绝对路径跨域请求
+                const res = await fetch(`${API_BASE}/messages_create.php`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user, content: msg })
+                    body: fd,
+                    credentials: "include"
                 });
+                
                 const json = await res.json();
-                if (json.status === 'success') {
-                    document.getElementById('message').value = '';
-                    loadComments();
-                    localStorage.setItem('rf_username', user);
+                
+                if (json.ok) {
+                    msgBox.value = '';
+                    localStorage.setItem('rf_username', userBox.value);
+                    
+                    if (json.data.status === "held") {
+                        alert("已提交，需审核后显示 // AWAITING AUDIT");
+                    } else {
+                        loadComments();
+                    }
                 } else {
-                    alert('ERROR: ' + json.msg);
+                    alert('TRANSMISSION FAILED: ' + (json.error || 'Unknown Error'));
                 }
             } catch (err) {
-                alert('DEMO MODE: CANNOT SEND TO SERVER');
+                alert('NETWORK ERROR: CANNOT REACH SERVER');
             } finally {
                 btn.innerHTML = 'TRANSMIT';
                 btn.disabled = false;
@@ -531,6 +538,7 @@
         }
 
         function timeAgo(dateString) {
+            if(!dateString) return '';
             const date = new Date(dateString.replace(/-/g, '/'));
             const seconds = Math.floor((new Date() - date) / 1000);
             if (seconds < 60) return 'NOW';
