@@ -12,7 +12,7 @@
 
     <style>
         /* ==========================================
-           赛博朋克风格样式
+           样式保持不变
            ========================================== */
         :root { 
             --bg-deep: #030303; 
@@ -171,7 +171,7 @@
             </span>
         </div>
         
-          <div class="hidden md:flex gap-6 text-[10px] font-mono text-gray-500 tracking-wider">
+        <div class="hidden md:flex gap-6 text-[10px] font-mono text-gray-500 tracking-wider">
             <a href="https://github.com/feeday" target="_blank" class="nav-link transition"><i class="fab fa-github"></i>GITHUB</a>
             <a href="https://www.bilibili.com/" target="_blank" class="nav-link transition"><i class="fab fa-bilibili"></i>BILIBILI</a> 
             <a href="https://huggingface.co/spaces?category=video-generation&sort=likes" target="_blank" class="nav-link transition"><i class="fas fa-smile"></i>HUGGINGFACE</a>
@@ -183,6 +183,7 @@
           <a href="https://gemini.google.com/" target="_blank" class="nav-link transition" title="Gemini">
     <i class="fas fa-robot"></i>Gemini</a>
         </div>
+
 
         <div class="text-[10px] font-mono text-gray-500 flex items-center gap-2">
             <span class="w-1.5 h-1.5 rounded-full bg-green-500 box-shadow-green"></span>
@@ -304,8 +305,6 @@
                             <textarea id="message" name="content" placeholder="Input data..." class="cyber-input p-2 text-xs h-20 resize-none" required></textarea>
                         </div>
                         
-                        <input type="hidden" name="csrf" value="">
-                        
                         <button type="submit" id="send-btn" class="cyber-btn w-full py-2 text-xs border-[#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black">
                             TRANSMIT
                         </button>
@@ -323,7 +322,6 @@
     </div>
 
     <script>
-        // ⭐⭐ 关键修改：指向 cpuck.com 的 API ⭐⭐
         const API_BASE = "https://cpuck.com/video/api";
 
         const database = [
@@ -463,7 +461,6 @@
             }
 
             try {
-                // ⭐ 使用绝对路径跨域请求 PHP 接口
                 const res = await fetch(`${API_BASE}/messages_list.php?page=1&approved=1`, {
                      credentials: "include" 
                 });
@@ -513,7 +510,6 @@
             const fd = new FormData(form); 
 
             try {
-                // ⭐ 使用绝对路径跨域请求
                 const res = await fetch(`${API_BASE}/messages_create.php`, {
                     method: 'POST',
                     body: fd,
