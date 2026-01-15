@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI 诸神之战</title>
+    <title>AI Test</title>
     <style>
         :root { --wechat-green: #07c160; --wechat-bg: #f3f3f3; --border-color: #ddd; --wechat-blue: #576b95; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -169,7 +169,7 @@
 
         try {
             let context = [{ role: "system", content: "你是一个真实的微信群友。简短口语化回复，直接说重点。严禁任何助手的废话。" }];
-            chatHistory.slice(-100).forEach(h => context.push(h)); // 最近100条记忆
+            chatHistory.slice(-10).forEach(h => context.push(h)); // 最近100条记忆
             
             let userMsg = media && media.type === 'image' ? { role: "user", content: [{ type: "text", text: prompt || "看图" }, { type: "image_url", image_url: { url: media.data } }] } : { role: "user", content: prompt };
             context.push(userMsg);
