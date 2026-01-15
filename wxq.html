@@ -20,17 +20,17 @@
         .nickname { font-size: 11px; color: #999; margin-bottom: 2px; }
         .bubble { padding: 10px 14px; border-radius: 8px; line-height: 1.5; font-size: 15px; background: #fff; border: 0.5px solid #e7e7e7; word-break: break-all; outline: none; }
         
-        /* Token 与 复制区颜色区分 */
+        /* 统计与复制行：仅针对文本 */
         .usage-row { font-size: 10px; margin-top: 5px; display: flex; align-items: center; gap: 10px; padding: 0 4px; }
-        .token-text { color: #bbb; flex: 1; } /* Token 为浅灰色 */
-        .copy-action { color: var(--wechat-blue); cursor: pointer; font-weight: 500; font-size: 11px; } /* 复制为蓝色 */
+        .token-info { color: #bbb; flex: 1; } 
+        .copy-trigger { color: var(--wechat-blue); cursor: pointer; font-weight: 500; }
 
         .msg.right { align-self: flex-end; flex-direction: row-reverse; }
         .msg.right .bubble { background: #95ec69; border: none; color: #000; }
         .msg.right .avatar { background: #07c160; }
         .msg.right .usage-row { flex-direction: row-reverse; }
 
-        /* 底部工具栏布局 */
+        /* 底部工具栏布局 - 锁定防变形 */
         footer { 
             background: #f7f7f7; border-top: 1px solid var(--border-color); padding: 8px 10px; 
             display: flex; align-items: flex-end; gap: 8px; 
@@ -47,11 +47,11 @@
             flex-shrink: 0; white-space: nowrap; display: none; 
         }
 
-        /* 设置弹窗 */
+        /* 设置中心 */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; justify-content: center; align-items: center; }
         .modal-body { background: #fff; width: 88%; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
         .modal-body input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-        .verify-btn { background: #4a90e2; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold; }
+        .v-action { background: #4a90e2; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold; }
 
         #model-picker { position: fixed; bottom: 75px; left: 10px; width: calc(100% - 20px); background: #fff; border-radius: 12px; z-index: 500; display: none; flex-direction: column; padding: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
         .m-opt { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid #eee; }
@@ -63,7 +63,7 @@
     <div id="message-list"></div>
 
     <div id="model-picker">
-        <div style="font-weight:bold; margin-bottom:10px; font-size:14px;">多模型同时回复</div>
+        <div style="font-weight:bold; margin-bottom:10px; font-size:14px;">选择模型群发</div>
         <div id="m-wrap" style="max-height: 200px; overflow-y: auto;"></div>
         <button style="margin-top:10px; width:100%; padding:10px; background:#f0f0f0; border:none; border-radius:8px; font-weight:bold;" onclick="togglePicker()">确定</button>
     </div>
@@ -73,7 +73,7 @@
         <div class="icon-btn" onclick="togglePicker()"><svg viewBox="0 0 24 24"><path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
         <div id="input-msg" contenteditable="true" placeholder="发送内容..."></div>
         <button id="send-btn" onclick="handleSend()">发送</button>
-        <div class="icon-btn" onclick="toggleSettings()"><svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" fill="currentColor"/><path d="M19.43,12.98A7.79,7.79,0,0,0,19.5,12a7.79,7.79,0,0,0-.07-.98l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.61-.22l-2.49,1a7.39,7.39,0,0,0-1.69-.98l-.38-2.65A.5.5,0,0,0,14.37,2H9.63a.5.5,0,0,0-.5.42l-.38,2.65a7.39,7.39,0,0,0-1.69.98l-2.49-1a.5.5,0,0,0-.61.22l-2,3.46a.5.5,0,0,0,.12.64L4.57,11a7.79,7.79,0,0,0-.07.98a7.79,7.79,0,0,0,.07.98L2.46,14.63a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.61.22l2.49-1a7.39,7.39,0,0,0,1.69.98l.38,2.65a.5.5,0,0,0,.5.42h4.74a.5.5,0,0,0,.5$.42l.38-2.65a7.39,7.39,0,0,0,1.69$.98l2.49,1a.5.5,0,0,0,.61-.22l2-3.46a.5.5,0,0,0-.12-.64Z" fill="currentColor"/></svg></div>
+        <div class="icon-btn" onclick="toggleSettings()"><svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" fill="currentColor"/><path d="M19.43,12.98A7.79,7.79,0,0,0,19.5,12a7.79,7.79,0,0,0-.07-.98l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.61-.22l-2.49,1a7.39,7.39,0,0,0-1.69-.98l-.38-2.65A.5.5,0,0,0,14.37,2H9.63a.5.5,0,0,0-.5.42l-.38,2.65a7.39,7.39,0,0,0-1.69.98l-2.49-1a.5.5,0,0,0-.61.22l-2,3.46a.5.5,0,0,0,.12.64L4.57,11a7.79,7.79,0,0,0-.07.98a7.79,7.79,0,0,0,.07.98L2.46,14.63a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.61.22l2.49-1a7.39,7.39,0,0,0,1.69$.98l.38,2.65a.5.5,0,0,0$.5$.42h4.74a.5.5,0,0,0$.5$.42l.38-2.65a7.39,7.39,0,0,0,1.69$.98l2.49,1a.5.5,0,0,0$.61-.22l2-3.46a.5.5,0,0,0-.12-.64Z" fill="currentColor"/></svg></div>
         <input type="file" id="f-in" style="display:none" accept="image/*,video/*">
     </footer>
 
@@ -83,7 +83,7 @@
             <input type="text" id="c-url" placeholder="代理地址 (Poixe请带/v1)">
             <input type="password" id="c-key" placeholder="API Key">
             <div id="v-status" style="font-size:12px; min-height:14px; margin-bottom: -5px;"></div>
-            <button class="verify-btn" onclick="verifyAPI()">验证 API 有效性</button>
+            <button class="v-action" onclick="verifyAPI()">验证 API 有效性</button>
             <input type="text" id="c-models" placeholder="模型列表 (英文逗号隔开)">
             <button style="background:var(--wechat-green); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;" onclick="saveConfig()">保存设置并刷新</button>
         </div>
@@ -114,30 +114,28 @@
         models.forEach(m => { if(!m.trim()) return; wrap.innerHTML += `<label class="m-opt"><span>${m.trim()}</span><input type="checkbox" name="m-ck" value="${m.trim()}"></label>`; });
     }
 
-    // 更新发送按钮状态
-    function updateSendBtn() { sBtn.style.display = (inArea.innerText.trim() || stagedMedia) ? 'block' : 'none'; }
-    inArea.addEventListener('input', updateSendBtn);
+    function updateBtn() { sBtn.style.display = (inArea.innerText.trim() || stagedMedia) ? 'block' : 'none'; }
+    inArea.addEventListener('input', updateBtn);
 
-    // API 验证逻辑
     async function verifyAPI() {
         const url = document.getElementById('c-url').value.trim().replace(/\/$/, '');
         const key = document.getElementById('c-key').value.trim();
         const vS = document.getElementById('v-status');
-        vS.innerText = "⏳ 正在联机测试..."; vS.style.color = "#666";
+        vS.innerText = "⏳ 正在联机效验..."; vS.style.color = "#666";
         try {
             const resp = await fetch(`${url}/chat/completions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
                 body: JSON.stringify({ model: 'deepseek-chat:free', messages: [{role:'user', content:'hi'}], max_tokens: 1 })
             });
-            if (resp.ok) { vS.innerText = "✅ API 验证成功，服务可用"; vS.style.color = "green"; }
-            else { vS.innerText = `❌ 失败: ${resp.status} (路径或Key有误)`; vS.style.color = "red"; }
-        } catch (e) { vS.innerText = "❌ 无法连接: 网络异常"; vS.style.color = "red"; }
+            if (resp.ok) { vS.innerText = "✅ API 验证成功"; vS.style.color = "green"; }
+            else { vS.innerText = `❌ 失败: ${resp.status}`; vS.style.color = "red"; }
+        } catch (e) { vS.innerText = "❌ 无法连接"; vS.style.color = "red"; }
     }
 
     fIn.onchange = (e) => {
         const f = e.target.files[0]; if(!f) return;
-        const r = new FileReader(); r.onload = (ev) => { stagedMedia = { data: ev.target.result, type: f.type.split('/')[0] }; updateSendBtn(); }; r.readAsDataURL(f);
+        const r = new FileReader(); r.onload = (ev) => { stagedMedia = { data: ev.target.result, type: f.type.split('/')[0] }; updateBtn(); }; r.readAsDataURL(f);
     };
 
     function appendMsg({role, nickname, content, type='text', usage=null}) {
@@ -145,30 +143,23 @@
         let body = type === 'text' ? `<div class="bubble" contenteditable="true">${content}</div>` : 
             `<div class="bubble" style="background:none; border:none; padding:0"><${type === 'image' ? 'img' : 'video'} src="${content}" class="media-chat" ${type==='video'?'controls':''}></div>`;
         
-        // 区分 Token 颜色与复制按钮颜色
         const usageTxt = usage ? `Tokens: 入 ${usage.prompt_tokens} | 出 ${usage.completion_tokens} | 共 ${usage.total_tokens}` : '';
+
+        // 核心：仅文本消息显示 usage-row (包含复制按钮)
+        const usageRowHtml = type === 'text' ? `
+                <div class="usage-row">
+                    <span class="token-info">${usageTxt}</span>
+                    <span class="copy-trigger" onclick="navigator.clipboard.writeText(this.parentElement.previousElementSibling.innerText).then(()=>alert('已复制文本'))">复制内容</span>
+                </div>` : '';
 
         div.innerHTML = `
             <div class="avatar">${nickname[0].toUpperCase()}</div>
             <div class="content-box">
                 <div class="nickname">${nickname}</div>
                 ${body}
-                <div class="usage-row">
-                    <span class="token-text">${usageTxt}</span>
-                    <span class="copy-action" onclick="copyContent(this)">复制内容</span>
-                </div>
+                ${usageRowHtml}
             </div>`;
         mList.appendChild(div); mList.scrollTop = mList.scrollHeight; return div;
-    }
-
-    // 统一下拉复制函数：支持文本与媒体
-    function copyContent(btn) {
-        const bubble = btn.parentElement.previousElementSibling;
-        const text = (bubble.tagName === 'DIV' && bubble.classList.contains('bubble')) ? bubble.innerText : "[媒体消息]";
-        navigator.clipboard.writeText(text).then(() => {
-            const old = btn.innerText; btn.innerText = "已复制";
-            setTimeout(() => btn.innerText = old, 1500);
-        });
     }
 
     async function callAPI(model, prompt, media) {
@@ -176,7 +167,7 @@
         const key = localStorage.getItem('api_key');
         const load = appendMsg({ role:'left', nickname: model, content: '正在思考...' });
         const bubble = load.querySelector('.bubble');
-        const usageSpan = load.querySelector('.token-text');
+        const usageSpan = load.querySelector('.token-info');
 
         try {
             let msgContent = media && media.type === 'image' ? [{ type: "text", text: prompt || "分析图" }, { type: "image_url", image_url: { url: media.data } }] : prompt;
@@ -188,7 +179,7 @@
             const d = await res.json();
             if(d.choices) {
                 bubble.innerText = d.choices[0].message.content;
-                if(d.usage) usageSpan.innerText = `Tokens: 入 ${d.usage.prompt_tokens} | 出 ${d.usage.completion_tokens} | 共 ${d.usage.total_tokens}`;
+                if(d.usage && usageSpan) usageSpan.innerText = `Tokens: 入 ${d.usage.prompt_tokens} | 出 ${d.usage.completion_tokens} | 共 ${d.usage.total_tokens}`;
             } else { bubble.innerText = "Error: " + JSON.stringify(d.error || d); }
         } catch(e) { bubble.innerText = "请求失败"; }
         mList.scrollTop = mList.scrollHeight;
@@ -203,7 +194,7 @@
         if(text) appendMsg({ role:'right', nickname: '我', content: text });
 
         activeModels.forEach(m => callAPI(m, text, stagedMedia));
-        inArea.innerText = ''; stagedMedia = null; updateSendBtn();
+        inArea.innerText = ''; stagedMedia = null; updateBtn();
     }
 </script>
 </body>
