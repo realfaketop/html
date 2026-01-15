@@ -3,83 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LLM 混合群聊</title>
+    <title>AI 混合群聊 - 高级版</title>
     <style>
         :root {
             --wechat-green: #95ec69;
             --wechat-bg: #f3f3f3;
             --wechat-header: #ededed;
             --border-color: #ddd;
+            --quote-bg: #e9e9e9;
         }
 
-        /* 基础样式重置 */
         * { box-sizing: border-box; }
         body, html {
             margin: 0; padding: 0; height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background-color: #fff; /* PC端大背景色 */
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+            background-color: #fff;
         }
 
-        /* 聊天主容器：默认电脑端样式 */
         #chat-wrapper {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            max-width: 700px; /* 电脑端宽度 */
-            margin: 0 auto;
-            background-color: var(--wechat-bg);
-            border-left: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; height: 100vh;
+            max-width: 700px; margin: 0 auto; background-color: var(--wechat-bg);
+            border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color);
         }
 
-        /* 页头 */
         header {
-            background: var(--wechat-header);
-            padding: 15px;
-            text-align: center;
-            font-weight: 500;
-            font-size: 16px;
-            border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0;
+            background: var(--wechat-header); padding: 15px; text-align: center;
+            font-weight: 500; border-bottom: 1px solid var(--border-color); flex-shrink: 0;
         }
 
-        /* 消息列表区域 */
         #message-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            -webkit-overflow-scrolling: touch; /* 手机端滚动更流畅 */
+            flex: 1; overflow-y: auto; padding: 15px; display: flex;
+            flex-direction: column; gap: 20px; -webkit-overflow-scrolling: touch;
         }
 
-        /* 消息样式（通用） */
-        .msg { display: flex; align-items: flex-start; gap: 10px; max-width: 88%; }
+        /* 消息基础结构 */
+        .msg { display: flex; align-items: flex-start; gap: 10px; max-width: 90%; cursor: pointer; }
         .avatar {
-            width: 42px; height: 42px; border-radius: 4px;
-            flex-shrink: 0; display: flex; align-items: center; 
-            justify-content: center; font-size: 12px; color: white;
-            font-weight: bold;
+            width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0;
+            background-size: cover; background-position: center;
         }
         .content-box { display: flex; flex-direction: column; }
-        .nickname { font-size: 12px; color: #888; margin-bottom: 4px; margin-left: 2px; }
+        .nickname { font-size: 12px; color: #7a7a7a; margin-bottom: 4px; }
+        
+        /* 气泡逻辑 */
         .bubble {
-            padding: 10px 12px; border-radius: 6px;
-            position: relative; line-height: 1.4; word-break: break-all;
-            font-size: 15px;
+            padding: 10px 12px; border-radius: 6px; position: relative;
+            line-height: 1.5; word-break: break-all; font-size: 15px; min-height: 40px;
         }
 
-        /* 对方消息 (左侧) */
+        /* 图片消息 */
+        .bubble.image-bubble { background: none !important; border: none !important; padding: 0; }
+        .bubble.image-bubble img {
+            max-width: 200px; max-height: 300px; border-radius: 4px; display: block;
+        }
+
+        /* 引用样式 */
+        .quote-box {
+            background: var(--quote-bg); padding: 6px 10px; border-radius: 4px;
+            font-size: 12px; color: #888; margin-top: 4px;
+            border-left: 0px solid #ccc; /* 微信样式的引用在下方 */
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
         .msg.left { align-self: flex-start; }
-        .msg.left .bubble { background: #fff; border: 1px solid #e7e7e7; }
+        .msg.left .bubble { background: #fff; }
         .msg.left .bubble::before {
-            content: ""; position: absolute; left: -11px; top: 10px;
-            border: 6px solid transparent; border-right-color: #fff;
+            content: ""; position: absolute; left: -10px; top: 10px;
+            border: 5px solid transparent; border-right-color: #fff;
         }
 
-        /* 自己消息 (右侧) */
         .msg.right { align-self: flex-end; flex-direction: row-reverse; }
         .msg.right .nickname { display: none; }
         .msg.right .bubble { background: var(--wechat-green); }
@@ -88,68 +81,55 @@
             border: 5px solid transparent; border-left-color: var(--wechat-green);
         }
 
-        /* 底部输入框 */
-        footer {
-            background: #f7f7f7;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-top: 1px solid var(--border-color);
-            flex-shrink: 0;
-            padding-bottom: env(safe-area-inset-bottom); /* 适配 iPhone 全面屏底部 */
-        }
-        #input-msg {
-            flex: 1; border: none; padding: 10px; border-radius: 6px; 
-            outline: none; font-size: 16px; background: #fff;
-        }
-        #send-btn {
-            background: #07c160; color: #fff; border: none;
-            padding: 8px 18px; border-radius: 4px; cursor: pointer;
-            font-weight: 500; font-size: 14px;
+        /* 输入区 */
+        #quote-preview-bar {
+            background: #eee; padding: 5px 15px; font-size: 12px; color: #666;
+            display: none; border-top: 1px solid #ddd; justify-content: space-between;
         }
 
-        /* ========================================
-           关键点：移动端适配 (屏幕宽度小于 768px)
-           ======================================== */
+        footer {
+            background: #f7f7f7; padding: 10px; display: flex; align-items: center;
+            gap: 10px; border-top: 1px solid var(--border-color); padding-bottom: env(safe-area-inset-bottom);
+        }
+        .icon-btn { font-size: 24px; cursor: pointer; color: #555; flex-shrink: 0; }
+        #input-msg {
+            flex: 1; border: none; padding: 10px; border-radius: 4px; outline: none; font-size: 16px;
+        }
+        #send-btn {
+            background: #07c160; color: #fff; border: none; padding: 8px 15px;
+            border-radius: 4px; cursor: pointer; font-size: 14px;
+        }
+
+        /* 移动端适配 */
         @media (max-width: 768px) {
-            #chat-wrapper {
-                max-width: 100%; /* 占满宽度 */
-                border: none;    /* 取消边框 */
-                box-shadow: none;
-            }
-            header {
-                padding: 12px;
-                font-size: 17px; /* 微信端字体略大 */
-            }
-            .avatar {
-                width: 38px; height: 38px; /* 手机端头像略小 */
-            }
-            .bubble {
-                font-size: 16px; /* 提高手机端阅读舒适度 */
-            }
-            footer {
-                padding: 8px 12px; /* 手机端输入区域更紧凑 */
-            }
+            #chat-wrapper { max-width: 100%; border: none; }
+            .bubble { font-size: 16px; }
         }
     </style>
 </head>
 <body>
 
 <div id="chat-wrapper">
-    <header>AI 实验室群聊 (3)</header>
+    <header id="group-title">AI 旅行者 | 实验室 (3)</header>
     
     <div id="message-list">
         <div class="msg left">
-            <div class="avatar" style="background:#4a90e2;">G</div>
+            <div class="avatar" style="background-color:#4a90e2; display: flex; align-items: center; justify-content: center; color: white;">A</div>
             <div class="content-box">
-                <div class="nickname">GPT-4o</div>
-                <div class="bubble">大家好，我是群里的 AI 助手。</div>
+                <div class="nickname">DeepSeek</div>
+                <div class="bubble">刚刚过去的一周，大模型领域又有了新进展。欢迎大家 @我 或发送图片进行分析。</div>
             </div>
         </div>
     </div>
 
+    <div id="quote-preview-bar">
+        <span id="quote-text"></span>
+        <span style="cursor:pointer" onclick="cancelQuote()">×</span>
+    </div>
+
     <footer>
+        <span class="icon-btn" onclick="document.getElementById('file-input').click()">⊕</span>
+        <input type="file" id="file-input" style="display:none" accept="image/*">
         <input type="text" id="input-msg" placeholder="发送消息..." autocomplete="off">
         <button id="send-btn">发送</button>
     </footer>
@@ -159,62 +139,128 @@
     const msgList = document.getElementById('message-list');
     const input = document.getElementById('input-msg');
     const btn = document.getElementById('send-btn');
+    const fileInput = document.getElementById('file-input');
+    const quoteBar = document.getElementById('quote-preview-bar');
+    const quoteTextSpan = document.getElementById('quote-text');
 
-    // 发送消息到界面
-    function appendMessage(role, nickname, text, avatarColor) {
+    let currentQuote = null; // 存储当前引用的内容
+
+    // 发送消息核心函数
+    function appendMessage({role, nickname, text, type = 'text', avatarChar, avatarColor, quote}) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `msg ${role}`;
         
+        // 模拟点击消息触发引用
+        msgDiv.onclick = () => setQuote(nickname, text, type);
+
+        let contentHtml = '';
+        if (type === 'text') {
+            contentHtml = `<div class="bubble">${text}</div>`;
+        } else if (type === 'image') {
+            contentHtml = `<div class="bubble image-bubble"><img src="${text}" onclick="window.open(this.src)"></div>`;
+        }
+
+        // 渲染引用框（如果有）
+        let quoteHtml = '';
+        if (quote) {
+            const displayQuoteText = quote.type === 'image' ? '[图片]' : quote.text;
+            quoteHtml = `<div class="quote-box">${quote.user}：${displayQuoteText}</div>`;
+        }
+
         msgDiv.innerHTML = `
-            <div class="avatar" style="background:${avatarColor};">${nickname[0]}</div>
+            <div class="avatar" style="background-color:${avatarColor}; display: flex; align-items: center; justify-content: center; color: white;">${avatarChar}</div>
             <div class="content-box">
                 <div class="nickname">${nickname}</div>
-                <div class="bubble">${text}</div>
+                ${contentHtml}
+                ${quoteHtml}
             </div>
         `;
         
         msgList.appendChild(msgDiv);
-        // 确保滚动到底部
-        setTimeout(() => {
-            msgList.scrollTo({ top: msgList.scrollHeight, behavior: 'smooth' });
-        }, 50);
+        msgList.scrollTo({ top: msgList.scrollHeight, behavior: 'smooth' });
     }
 
-    // 处理发送
+    // 设置引用
+    function setQuote(user, text, type) {
+        currentQuote = { user, text, type };
+        quoteBar.style.display = 'flex';
+        quoteTextSpan.innerText = `引用 ${user}: ${type === 'image' ? '[图片]' : text}`;
+        input.focus();
+    }
+
+    // 取消引用
+    function cancelQuote() {
+        currentQuote = null;
+        quoteBar.style.display = 'none';
+    }
+
+    // 处理文本发送
     function handleSend() {
         const text = input.value.trim();
         if (!text) return;
 
         // 1. 发送自己的消息
-        appendMessage('right', 'Me', text, '#07c160');
+        appendMessage({
+            role: 'right',
+            nickname: '我',
+            text: text,
+            avatarChar: 'Me',
+            avatarColor: '#07c160',
+            quote: currentQuote
+        });
+
+        // 2. 检测 @ 逻辑
+        if (text.includes('@DeepSeek') || text.includes('@所有人')) {
+            const replyMsg = text.includes('@所有人') ? '收到，正在为您分析全群动态...' : '你好！我是 DeepSeek，正在为您分析。';
+            setTimeout(() => {
+                appendMessage({
+                    role: 'left',
+                    nickname: 'DeepSeek',
+                    text: replyMsg,
+                    avatarChar: 'D',
+                    avatarColor: '#4a90e2'
+                });
+            }, 1000);
+        }
+
         input.value = '';
-
-        // 2. 模拟多个 AI 回复
-        simulateAIResponses(text);
+        cancelQuote();
     }
 
-    function simulateAIResponses(userText) {
-        // 第一个 AI
-        setTimeout(() => {
-            appendMessage('left', 'Claude-3.5', '收到你的消息了，我在分析中...', '#d97706');
-        }, 1000);
-
-        // 第二个 AI
-        setTimeout(() => {
-            appendMessage('left', 'Gemini-Pro', '针对你说的“' + userText + '”，我有不同看法。', '#4285f4');
-        }, 2200);
-    }
+    // 处理图片发送
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                appendMessage({
+                    role: 'right',
+                    nickname: '我',
+                    text: event.target.result,
+                    type: 'image',
+                    avatarChar: 'Me',
+                    avatarColor: '#07c160'
+                });
+                
+                // 模拟 AI 识别图片
+                setTimeout(() => {
+                    appendMessage({
+                        role: 'left',
+                        nickname: 'DeepSeek',
+                        text: '识别到你发了一张图片。图中的色彩很丰富，需要我分析具体细节吗？',
+                        avatarChar: 'D',
+                        avatarColor: '#4a90e2',
+                        quote: { user: '我', text: event.target.result, type: 'image' }
+                    });
+                }, 1500);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     btn.addEventListener('click', handleSend);
     input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSend();
-    });
-
-    // 解决手机端输入框被键盘遮挡的问题
-    input.addEventListener('focus', () => {
-        setTimeout(() => {
-            msgList.scrollTop = msgList.scrollHeight;
-        }, 300);
     });
 </script>
 
