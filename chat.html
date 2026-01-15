@@ -16,50 +16,58 @@
         /* 气泡样式 */
         .msg { display: flex; align-items: flex-start; gap: 10px; max-width: 95%; }
         .avatar { width: 38px; height: 38px; border-radius: 6px; flex-shrink: 0; background: #515bd4; display: flex; align-items: center; justify-content: center; font-size: 14px; color: white; font-weight: bold; }
-        .content-box { display: flex; flex-direction: column; max-width: calc(100% - 48px); }
         .nickname { font-size: 11px; color: #999; margin-bottom: 2px; }
         .bubble { padding: 10px 14px; border-radius: 8px; line-height: 1.5; font-size: 15px; background: #fff; border: 0.5px solid #e7e7e7; word-break: break-all; outline: none; }
 
-        /* 模型回复统计行 */
+        /* 模型统计行 */
         .usage-row { font-size: 10px; margin-top: 6px; display: none; align-items: center; gap: 8px; padding: 0 4px; }
-        .token-info, .count-info { color: #bbb; }
-        .token-info { flex: 1; }
+        .token-info, .count-info { color: #bbb; flex: 1; }
         .copy-btn { color: var(--wechat-blue); cursor: pointer; font-weight: bold; font-size: 11px; border: 0.5px solid var(--wechat-blue); padding: 0 4px; border-radius: 3px; }
 
         .msg.right { align-self: flex-end; flex-direction: row-reverse; }
         .msg.right .bubble { background: #95ec69; border: none; }
         .msg.right .avatar { background: #07c160; }
 
-        /* 发送前预览 */
+        /* 选中有预览区 */
         #media-preview-bar { display: none; background: #fff; padding: 10px; border-top: 1px solid #eee; align-items: center; gap: 12px; flex-shrink: 0; }
         .preview-thumb { position: relative; width: 60px; height: 60px; border: 1px solid #ddd; border-radius: 4px; }
         .preview-thumb img, .preview-thumb video { width: 100%; height: 100%; object-fit: cover; }
         .del-preview { position: absolute; top: -8px; right: -8px; background: #ff4d4f; color: #fff; width: 18px; height: 18px; border-radius: 50%; text-align: center; line-height: 16px; font-size: 12px; font-weight: bold; cursor: pointer; border: 2px solid #fff; }
 
-        /* 底部工具栏：➕ | 输入框 | 👤 | 发送 | ⚙ */
+        /* 底部工具栏布局：➕ | 输入框 | 👤 | ⚙ | 发送 */
         footer { 
-            background: #f7f7f7; border-top: 1px solid var(--border-color); padding: 8px 10px; 
-            display: flex; align-items: flex-end; gap: 6px; 
+            background: #f7f7f7; border-top: 1px solid var(--border-color); padding: 8px 8px; 
+            display: flex; align-items: flex-end; gap: 4px; 
             padding-bottom: calc(8px + env(safe-area-inset-bottom)); flex-shrink: 0;
         }
-        .icon-btn { width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .icon-btn svg { width: 26px; height: 26px; fill: #444; }
+        .icon-btn { 
+            width: 36px; height: 36px; cursor: pointer; display: flex; 
+            align-items: center; justify-content: center; flex-shrink: 0;
+            overflow: visible; /* 确保图标溢出不被裁切 */
+        }
+        .icon-btn svg { width: 28px; height: 28px; fill: #444; pointer-events: none; }
         
-        #input-msg { flex: 1; border: 1px solid #ddd; padding: 8px 12px; border-radius: 6px; outline: none; font-size: 16px; background: #fff; max-height: 120px; overflow-y: auto; min-width: 0; }
+        #input-msg { flex: 1; border: 1px solid #ddd; padding: 8px 10px; border-radius: 6px; outline: none; font-size: 16px; background: #fff; max-height: 120px; overflow-y: auto; min-width: 0; }
         
-        #send-btn { background: var(--wechat-green); color: #fff; border: none; width: 55px; height: 34px; border-radius: 4px; font-size: 14px; font-weight: bold; flex-shrink: 0; white-space: nowrap; display: none; }
+        #send-btn { 
+            background: var(--wechat-green); color: #fff; border: none; 
+            width: 55px; height: 34px; border-radius: 4px; font-size: 14px; 
+            font-weight: bold; flex-shrink: 0; white-space: nowrap; display: none; 
+            margin-bottom: 1px;
+        }
 
-        /* 设置中心 */
+        /* 弹窗样式 */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; justify-content: center; align-items: center; }
         .modal-body { background: #fff; width: 88%; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
         .modal-body input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
         
         .settings-btns { display: flex; gap: 10px; margin-top: 5px; }
-        .v-button { flex: 1; background: #4a90e2; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; }
-        .save-btn { flex: 1; background: var(--wechat-green); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; }
-        .token-link { flex: 1; background: #576b95; color: white; text-align: center; text-decoration: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; line-height: 1.2; display: flex; align-items: center; justify-content: center; }
+        .v-button, .save-btn { flex: 1; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .v-button { background: #4a90e2; }
+        .save-btn { background: var(--wechat-green); }
+        .token-link { flex: 1; background: #576b95; color: white; text-align: center; text-decoration: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
 
-        #model-picker { position: fixed; bottom: 80px; left: 10px; width: calc(100% - 20px); background: #fff; border-radius: 12px; z-index: 500; display: none; flex-direction: column; padding: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
+        #model-picker { position: fixed; bottom: 85px; left: 10px; width: calc(100% - 20px); background: #fff; border-radius: 12px; z-index: 500; display: none; flex-direction: column; padding: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
         .m-opt { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid #eee; }
         .media-chat { max-width: 200px; border-radius: 8px; margin-top: 5px; display: block; }
     </style>
@@ -73,36 +81,43 @@
             <div id="thumb-render"></div>
             <div class="del-preview" onclick="clearMedia()">×</div>
         </div>
-        <div style="font-size: 11px; color: #999;">就绪，点击发送</div>
+        <div style="font-size: 11px; color: #999;">媒体已就绪，点击发送</div>
     </div>
 
     <div id="model-picker">
-        <div style="font-weight:bold; margin-bottom:10px; font-size:14px;">群聊成员 (模型并发控制)</div>
+        <div style="font-weight:bold; margin-bottom:10px; font-size:14px;">群聊成员模型配置</div>
         <div id="m-wrap" style="max-height: 200px; overflow-y: auto;"></div>
         <button style="margin-top:10px; width:100%; padding:10px; background:#f0f0f0; border:none; border-radius:8px; font-weight:bold;" onclick="togglePicker()">确定</button>
     </div>
 
     <footer>
-        <div class="icon-btn" onclick="document.getElementById('f-in').click()"><svg viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg></div>
+        <div class="icon-btn" onclick="document.getElementById('f-in').click()">
+            <svg viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
+        </div>
         
         <div id="input-msg" contenteditable="true" placeholder="发送内容..."></div>
         
-        <div class="icon-btn" onclick="togglePicker()"><svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg></div>
+        <div class="icon-btn" onclick="togglePicker()">
+            <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>
+        </div>
         
+        <div class="icon-btn" onclick="toggleSettings()">
+            <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12c0,0.31,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+        </div>
+
         <button id="send-btn" onclick="handleSend()">发送</button>
         
-        <div class="icon-btn" onclick="toggleSettings()"><svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" fill="currentColor"/><path d="M19.43,12.98A7.79,7.79,0,0,0,19.5,12a7.79,7.79,0,0,0-.07-.98l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.61-.22l-2.49,1a7.39,7.39,0,0,0-1.69-.98l-.38-2.65A.5.5,0,0,0,14.37,2H9.63a.5.5,0,0,0-.5.42l-.38,2.65a7.39,7.39,0,0,0-1.69.98l-2.49-1a.5.5,0,0,0-.61.22l-2,3.46a.5.5,0,0,0,.12.64L4.57,11a7.79,7.79,0,0,0-.07.98a7.79,7.79,0,0,0,.07.98L2.46,14.63a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.61.22l2.49-1a7.39,7.39,0,0,0-1.69$.98l.38-2.65a.5.5,0,0,0$.5$.42h4.74a.5.5,0,0,0$.5$.42l.38-2.65a7.39,7.39,0,0,0,1.69$.98l2.49,1a.5.5,0,0,0$.61-.22l2-3.46a.5.5,0,0,0-.12-.64Z" fill="currentColor"/></svg></div>
         <input type="file" id="f-in" style="display:none" accept="image/*,video/*">
     </footer>
 
     <div id="s-modal" class="modal" onclick="if(event.target==this) toggleSettings()">
         <div class="modal-body">
-            <h3 style="margin:0; font-size:16px;">API 与模型配置</h3>
-            <input type="text" id="c-url" placeholder="代理地址 (如 https://api.poixe.com/v1)">
+            <h3 style="margin:0; font-size:16px;">配置中心</h3>
+            <input type="text" id="c-url" placeholder="代理地址 (Poixe请带/v1)">
             <input type="password" id="c-key" placeholder="API Key">
             <div id="v-status" style="font-size:12px; min-height:14px; margin-bottom:-5px;"></div>
             <button class="v-button" onclick="verifyAPI()">验证 API 有效性</button>
-            <input type="text" id="c-models" placeholder="模型名 (逗号隔开)">
+            <input type="text" id="c-models" placeholder="常用模型 (逗号隔开)">
             <div class="settings-btns">
                 <button class="save-btn" onclick="saveConfig()">保存并刷新</button>
                 <a href="https://poixe.com/i/0v73qa" target="_blank" class="token-link">获取令牌</a>
@@ -120,7 +135,6 @@
     const thumbRender = document.getElementById('thumb-render');
     let stagedMedia = null;
 
-    // 持久化加载修复
     window.onload = () => {
         document.getElementById('c-url').value = localStorage.getItem('api_url') || 'https://api.poixe.com/v1';
         document.getElementById('c-key').value = localStorage.getItem('api_key') || '';
@@ -130,23 +144,11 @@
 
     function toggleSettings() { const m = document.getElementById('s-modal'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
     function togglePicker() { const p = document.getElementById('model-picker'); p.style.display = p.style.display === 'flex' ? 'none' : 'flex'; }
-    
-    // 关键保存逻辑修复
-    function saveConfig() {
-        const url = document.getElementById('c-url').value.trim();
-        const key = document.getElementById('c-key').value.trim();
-        const models = document.getElementById('c-models').value.trim();
-        localStorage.setItem('api_url', url);
-        localStorage.setItem('api_key', key);
-        localStorage.setItem('api_models', models);
-        refreshPicker();
-        toggleSettings();
-    }
+    function saveConfig() { localStorage.setItem('api_url', document.getElementById('c-url').value.trim()); localStorage.setItem('api_key', document.getElementById('c-key').value.trim()); localStorage.setItem('api_models', document.getElementById('c-models').value.trim()); refreshPicker(); toggleSettings(); }
 
     function refreshPicker() {
-        const modelsStr = localStorage.getItem('api_models') || '';
         const wrap = document.getElementById('m-wrap'); wrap.innerHTML = '';
-        modelsStr.split(',').forEach(m => {
+        (localStorage.getItem('api_models') || '').split(',').forEach(m => {
             const name = m.trim(); if(!name) return;
             wrap.innerHTML += `<label class="m-opt"><span>${name}</span><input type="checkbox" name="m-ck" value="${name}"></label>`;
         });
@@ -170,8 +172,8 @@
         const vS = document.getElementById('v-status'); vS.innerText = "⏳ 探测中..."; vS.style.color = "#666";
         try {
             const resp = await fetch(`${url}/chat/completions`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }, body: JSON.stringify({ model: 'deepseek-chat:free', messages: [{role:'user', content:'hi'}], max_tokens: 1 }) });
-            if (resp.ok) { vS.innerText = "✅ API 有效"; vS.style.color = "green"; } else { vS.innerText = `❌ 失败: ${resp.status}`; vS.style.color = "red"; }
-        } catch (e) { vS.innerText = "❌ 无法连接地址"; vS.style.color = "red"; }
+            if (resp.ok) { vS.innerText = "✅ API 验证成功"; vS.style.color = "green"; } else { vS.innerText = `❌ 失败: ${resp.status}`; vS.style.color = "red"; }
+        } catch (e) { vS.innerText = "❌ 无法连接"; vS.style.color = "red"; }
     }
 
     function appendMsg({role, nickname, content, type='text'}) {
@@ -179,16 +181,15 @@
         let body = type === 'text' ? `<div class="bubble" contenteditable="true">${content}</div>` : `<div class="bubble" style="background:none; border:none; padding:0"><${type==='image'?'img':'video'} src="${content}" class="media-chat" ${type==='video'?'controls':''}></div>`;
         const statHtml = (role === 'left' && type === 'text') ? `<div class="usage-row"><span class="token-info"></span><span class="count-info"></span><span class="copy-btn" onclick="copyResult(this)">复制内容</span></div>` : '';
         div.innerHTML = `<div class="avatar">${nickname[0].toUpperCase()}</div><div class="content-box"><div class="nickname">${nickname}</div>${body}${statHtml}</div>`;
-        mList.appendChild(div); mList.scrollTo({ top: mList.scrollHeight, behavior: 'smooth' }); return div;
+        mList.appendChild(div); mList.scrollTop = mList.scrollHeight; return div;
     }
 
     function copyResult(btn) { const b = btn.parentElement.previousElementSibling; navigator.clipboard.writeText(b.innerText).then(() => { const old = btn.innerText; btn.innerText = "已复制"; setTimeout(() => btn.innerText = old, 1500); }); }
 
-    // 带自动重试逻辑的 API 调用
-    async function callAPIWithRetry(model, prompt, media, retryCount = 0) {
+    async function callAPIWithRetry(model, prompt, media, retry = 0) {
         const url = localStorage.getItem('api_url').replace(/\/$/, '');
         const key = localStorage.getItem('api_key');
-        const load = appendMsg({ role:'left', nickname: model, content: retryCount > 0 ? `重试中(${retryCount}/3)...` : '正在输入...' });
+        const load = appendMsg({ role:'left', nickname: model, content: retry > 0 ? `重试中(${retry}/3)...` : '正在输入...' });
         const bubble = load.querySelector('.bubble');
         const usageRow = load.querySelector('.usage-row');
 
@@ -197,23 +198,21 @@
             const res = await fetch(`${url}/chat/completions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-                body: JSON.stringify({ model: model, stream: false, messages: [{ role: "system", content: "你是一个真实的微信群友。回复必须简短口语化，杜绝助手语气，直接说重点。" }, { role: "user", content: msgContent }] })
+                body: JSON.stringify({ model: model, stream: false, messages: [{ role: "system", content: "你是一个微信成员。简短回复，杜绝助手口吻，说重点。" }, { role: "user", content: msgContent }] })
             });
-            
             const d = await res.json();
             if(d.choices) {
                 const txt = d.choices[0].message.content; bubble.innerText = txt;
-                if(usageRow) {
-                    if(d.usage) load.querySelector('.token-info').innerText = `Tokens: 入 ${d.usage.prompt_tokens} | 出 ${d.usage.completion_tokens} | 共 ${d.usage.total_tokens}`;
+                if(usageRow && d.usage) {
+                    load.querySelector('.token-info').innerText = `Tokens: 入 ${d.usage.prompt_tokens} | 出 ${d.usage.completion_tokens} | 共 ${d.usage.total_tokens}`;
                     load.querySelector('.count-info').innerText = `字数: ${txt.length}`;
                     usageRow.style.display = 'flex';
                 }
-            } else if (retryCount < 3) {
-                load.remove(); return callAPIWithRetry(model, prompt, media, retryCount + 1);
-            } else { bubble.innerText = "API 异常，重试结束。"; }
+            } else if (retry < 3) { load.remove(); return callAPIWithRetry(model, prompt, media, retry + 1); }
+            else { bubble.innerText = "API 异常，重试结束。"; }
         } catch(e) {
-            if (retryCount < 3) { load.remove(); return callAPIWithRetry(model, prompt, media, retryCount + 1); }
-            else { bubble.innerText = "网络请求失败，请检查设置。"; }
+            if (retry < 3) { load.remove(); return callAPIWithRetry(model, prompt, media, retry + 1); }
+            else { bubble.innerText = "网络失败。"; }
         }
     }
 
