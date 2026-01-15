@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AI 诸神之战</title>
+    <style>
+        :root { --wechat-green: #07c160; --wechat-bg: #f3f3f3; --border-color: #ddd; --wechat-blue: #576b95; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: -apple-system, sans-serif; background-color: var(--wechat-bg); overflow: hidden; }
+        #app { display: flex; flex-direction: column; height: 100%; width: 100%; }
+
+        /* 消息列表 */
+        #message-list { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 18px; -webkit-overflow-scrolling: touch; }
+
+        /* 气泡样式 */
+        .msg { display: flex; align-items: flex-start; gap: 10px; max-width: 95%; }
+        .avatar { width: 40px; height: 40px; border-radius: 6px; flex-shrink: 0; background: #515bd4; display: flex; align-items: center; justify-content: center; font-size: 14px; color: white; font-weight: bold; }
+        .content-box { display: flex; flex-direction: column; max-width: calc(100% - 50px); }
+        .nickname { font-size: 11px; color: #999; margin-bottom: 2px; }
+        .bubble { padding: 10px 14px; border-radius: 8px; line-height: 1.5; font-size: 15px; background: #fff; border: 0.5px solid #e7e7e7; word-break: break-all; outline: none; }
+
+        /* AI 回复下方的统计行 (仅左侧且回复完毕显示) */
+        .usage-row { font-size: 10px; margin-top: 6px; display: none; align-items: center; gap: 10px; padding: 0 4px; }
+        .token-info, .word-count { color: #bbb; }
+        .token-info { flex: 1; }
+        .copy-btn { color: var(--wechat-blue); cursor: pointer; font-weight: bold; font-size: 11px; border: 0.5px solid var(--wechat-blue); padding: 0 4px; border-radius: 3px; }
+
+        .msg.right { align-self: flex-end; flex-direction: row-reverse; }
+        .msg.right .bubble { background: #95ec69; border: none; }
+        .msg.right .avatar { background: #07c160; }
+
+        /* 发送前预览区 */
+        #media-preview-bar { display: none; background: #fff; padding: 10px; border-top: 1px solid #eee; align-items: center; gap: 12px; flex-shrink: 0; }
+        .preview-thumb { position: relative; width: 60px; height: 60px; border: 1px solid #ddd; border-radius: 4px; }
+        .preview-thumb img, .preview-thumb video { width: 100%; height: 100%; object-fit: cover; }
+        .del-preview { position: absolute; top: -8px; right: -8px; background: #ff4d4f; color: #fff; width: 18px; height: 18px; border-radius: 50%; text-align: center; line-height: 16px; font-size: 12px; font-weight: bold; cursor: pointer; border: 2px solid #fff; }
+
+        /* 底部工具栏布局 */
+        footer { 
+            background: #f7f7f7; border-top: 1px solid var(--border-color); padding: 8px 10px; 
+            display: flex; align-items: flex-end; gap: 8px; 
+            padding-bottom: calc(8px + env(safe-area-inset-bottom)); flex-shrink: 0;
+        }
+        .icon-btn { width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .icon-btn svg { width: 26px; height: 26px; fill: #444; }
+        #input-msg { flex: 1; border: 1px solid #ddd; padding: 8px 12px; border-radius: 6px; outline: none; font-size: 16px; background: #fff; max-height: 150px; overflow-y: auto; min-width: 0; }
+        
+        #send-btn { background: var(--wechat-green); color: #fff; border: none; width: 58px; height: 34px; border-radius: 4px; font-size: 14px; flex-shrink: 0; white-space: nowrap; display: none; }
+
+        /* 弹窗中心 */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .modal-body { background: #fff; width: 88%; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .modal-body input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
+        .v-button { background: #4a90e2; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+
+        #model-picker { position: fixed; bottom: 85px; left: 10px; width: calc(100% - 20px); background: #fff; border-radius: 12px; z-index: 500; display: none; flex-direction: column; padding: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
+        .m-opt { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid #eee; }
+        .media-chat { max-width: 220px; border-radius: 8px; margin-top: 5px; display: block; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div id="message-list"></div>
+
+    <div id="media-preview-bar">
+        <div class="preview-thumb">
+            <div id="thumb-render"></div>
+            <div class="del-preview" onclick="clearMedia()">×</div>
+        </div>
+        <div style="font-size: 12px; color: #999;">待发送</div>
+    </div>
+
+    <div id="model-picker">
+        <div style="font-weight:bold; margin-bottom:10px; font-size:14px;">联合回复模型选择</div>
+        <div id="m-wrap" style="max-height: 200px; overflow-y: auto;"></div>
+        <button style="margin-top:10px; width:100%; padding:10px; background:#f0f0f0; border:none; border-radius:8px; font-weight:bold;" onclick="togglePicker()">确定</button>
+    </div>
+
+    <footer>
+        <div class="icon-btn" onclick="document.getElementById('f-in').click()"><svg viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg></div>
+        <div class="icon-btn" onclick="togglePicker()"><svg viewBox="0 0 24 24"><path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+        <div id="input-msg" contenteditable="true" placeholder="聊点什么..."></div>
+        <button id="send-btn" onclick="handleSend()">发送</button>
+        <div class="icon-btn" onclick="toggleSettings()"><svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" fill="currentColor"/><path d="M19.43,12.98A7.79,7.79,0,0,0,19.5,12a7.79,7.79,0,0,0-.07-.98l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.61-.22l-2.49,1a7.39,7.39,0,0,0-1.69-.98l-.38-2.65A.5.5,0,0,0,14.37,2H9.63a.5.5,0,0,0-.5.42l-.38,2.65a7.39,7.39,0,0,0-1.69.98l-2.49-1a.5.5,0,0,0-.61.22l-2,3.46a.5.5,0,0,0,.12.64L4.57,11a7.79,7.79,0,0,0-.07.98a7.79,7.79,0,0,0,.07.98L2.46,14.63a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.61.22l2.49-1a7.39,7.39,0,0,0,1.69$.98l.38-2.65a.5.5,0,0,0$.5$.42h4.74a.5.5,0,0,0$.5$.42l.38-2.65a7.39,7.39,0,0,0,1.69$.98l2.49,1a.5.5,0,0,0$.61-.22l2-3.46a.5.5,0,0,0-.12-.64Z" fill="currentColor"/></svg></div>
+        <input type="file" id="f-in" style="display:none" accept="image/*,video/*">
+    </footer>
+
+    <div id="s-modal" class="modal" onclick="if(event.target==this) toggleSettings()">
+        <div class="modal-body">
+            <h3 style="margin:0; font-size:16px;">配置中心</h3>
+            <input type="text" id="c-url" placeholder="地址 (如 https://api.poixe.com/v1)">
+            <input type="password" id="c-key" placeholder="API Key">
+            <div id="v-status" style="font-size:12px; min-height:14px;"></div>
+            <button class="v-button" onclick="verifyAPI()">验证 API 有效性</button>
+            <input type="text" id="c-models" placeholder="常用模型 (逗号隔开)">
+            <button style="background:var(--wechat-green); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;" onclick="saveConfig()">保存并刷新列表</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const inArea = document.getElementById('input-msg');
+    const sBtn = document.getElementById('send-btn');
+    const mList = document.getElementById('message-list');
+    const fIn = document.getElementById('f-in');
+    const pBar = document.getElementById('media-preview-bar');
+    const thumbRender = document.getElementById('thumb-render');
+    let stagedMedia = null;
+
+    window.onload = () => {
+        document.getElementById('c-url').value = localStorage.getItem('api_url') || 'https://api.poixe.com/v1';
+        document.getElementById('c-key').value = localStorage.getItem('api_key') || '';
+        document.getElementById('c-models').value = localStorage.getItem('api_models') || 'deepseek-chat:free,gpt-4o-mini:free';
+        refreshPicker();
+    };
+
+    function toggleSettings() { const m = document.getElementById('s-modal'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
+    function togglePicker() { const p = document.getElementById('model-picker'); p.style.display = p.style.display === 'flex' ? 'none' : 'flex'; }
+    function saveConfig() { localStorage.setItem('api_url', document.getElementById('c-url').value.trim()); localStorage.setItem('api_key', document.getElementById('c-key').value.trim()); localStorage.setItem('api_models', document.getElementById('c-models').value.trim()); refreshPicker(); toggleSettings(); }
+
+    function refreshPicker() {
+        const models = (localStorage.getItem('api_models') || '').split(',');
+        const wrap = document.getElementById('m-wrap'); wrap.innerHTML = '';
+        models.forEach(m => { if(!m.trim()) return; wrap.innerHTML += `<label class="m-opt"><span>${m.trim()}</span><input type="checkbox" name="m-ck" value="${m.trim()}"></label>`; });
+    }
+
+    function checkUI() { sBtn.style.display = (inArea.innerText.trim() || stagedMedia) ? 'block' : 'none'; }
+    inArea.addEventListener('input', checkUI);
+
+    fIn.onchange = (e) => {
+        const f = e.target.files[0]; if(!f) return;
+        const r = new FileReader(); const type = f.type.split('/')[0];
+        r.onload = (ev) => { stagedMedia = { data: ev.target.result, type: type }; pBar.style.display = 'flex'; thumbRender.innerHTML = type === 'image' ? `<img src="${ev.target.result}">` : `<video src="${ev.target.result}" muted autoplay></video>`; checkUI(); };
+        r.readAsDataURL(f);
+    };
+
+    function clearMedia() { stagedMedia = null; pBar.style.display = 'none'; checkUI(); }
+
+    async function verifyAPI() {
+        const url = document.getElementById('c-url').value.trim().replace(/\/$/, '');
+        const key = document.getElementById('c-key').value.trim();
+        const vS = document.getElementById('v-status');
+        vS.innerText = "⏳ 探测中..."; vS.style.color = "#666";
+        try {
+            const resp = await fetch(`${url}/chat/completions`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }, body: JSON.stringify({ model: 'deepseek-chat:free', messages: [{role:'user', content:'hi'}], max_tokens: 1 }) });
+            if (resp.ok) { vS.innerText = "✅ API 验证成功"; vS.style.color = "green"; } else { vS.innerText = `❌ 错误: ${resp.status}`; vS.style.color = "red"; }
+        } catch (e) { vS.innerText = "❌ 无法连接地址"; vS.style.color = "red"; }
+    }
+
+    function appendMsg({role, nickname, content, type='text'}) {
+        const div = document.createElement('div'); div.className = `msg ${role}`;
+        let body = type === 'text' ? `<div class="bubble" contenteditable="true">${content}</div>` : `<div class="bubble" contenteditable="true" style="background:none; border:none; padding:0"><${type === 'image' ? 'img' : 'video'} src="${content}" class="media-chat" ${type==='video'?'controls':''}></div>`;
+        const statHtml = (role === 'left' && type === 'text') ? `<div class="usage-row"><span class="token-info"></span><span class="word-count"></span><span class="copy-btn" onclick="copyResult(this)">复制内容</span></div>` : '';
+        div.innerHTML = `<div class="avatar">${nickname[0].toUpperCase()}</div><div class="content-box"><div class="nickname">${nickname}</div>${body}${statHtml}</div>`;
+        mList.appendChild(div); mList.scrollTop = mList.scrollHeight; return div;
+    }
+
+    function copyResult(btn) { const b = btn.parentElement.previousElementSibling; navigator.clipboard.writeText(b.innerText).then(() => { const old = btn.innerText; btn.innerText = "已复制"; setTimeout(() => btn.innerText = old, 1500); }); }
+
+    async function callAPI(model, prompt, media) {
+        const url = localStorage.getItem('api_url').replace(/\/$/, '');
+        const key = localStorage.getItem('api_key');
+        const load = appendMsg({ role:'left', nickname: model, content: '正在输入...' });
+        const bubble = load.querySelector('.bubble');
+        const usageRow = load.querySelector('.usage-row');
+        const tokenSpan = load.querySelector('.token-info');
+        const countSpan = load.querySelector('.word-count');
+
+        try {
+            let msgContent = media && media.type === 'image' ? [{ type: "text", text: prompt || "分析" }, { type: "image_url", image_url: { url: media.data } }] : prompt;
+            const res = await fetch(`${url}/chat/completions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                body: JSON.stringify({ 
+                    model: model, 
+                    stream: false, 
+                    messages: [
+                        { role: "system", content: "你现在是一个真实的微信群聊成员。请简短、口语化地回复。不要带有AI助手的口吻，不要说‘好的’、‘明白’、‘这是为您生成的’等废话。直接进入正题。" },
+                        { role: "user", content: msgContent }
+                    ] 
+                })
+            });
+            const d = await res.json();
+            if(d.choices) {
+                const txt = d.choices[0].message.content;
+                bubble.innerText = txt;
+                if(usageRow) {
+                    if(d.usage) tokenSpan.innerText = `Tokens: 入 ${d.usage.prompt_tokens} | 出 ${d.usage.completion_tokens} | 共 ${d.usage.total_tokens}`;
+                    countSpan.innerText = `字数: ${txt.length}`;
+                    usageRow.style.display = 'flex';
+                }
+            } else { bubble.innerText = "API 响应异常: " + JSON.stringify(d.error || d); }
+        } catch(e) { bubble.innerText = "请求失败"; }
+        mList.scrollTop = mList.scrollHeight;
+    }
+
+    function handleSend() {
+        const text = inArea.innerText.trim();
+        const checks = Array.from(document.querySelectorAll('input[name="m-ck"]:checked')).map(c => c.value);
+        const activeModels = checks.length > 0 ? checks : [localStorage.getItem('api_models').split(',')[0]];
+        if(stagedMedia) appendMsg({ role:'right', nickname: '我', content: stagedMedia.data, type: stagedMedia.type });
+        if(text) appendMsg({ role:'right', nickname: '我', content: text });
+        activeModels.forEach(m => callAPI(m, text, stagedMedia));
+        inArea.innerText = ''; clearMedia();
+    }
+    inArea.onkeypress = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
+</script>
+</body>
+</html>
