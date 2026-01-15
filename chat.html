@@ -16,11 +16,10 @@
         /* 气泡样式 */
         .msg { display: flex; align-items: flex-start; gap: 10px; max-width: 95%; }
         .avatar { width: 40px; height: 40px; border-radius: 6px; flex-shrink: 0; background: #515bd4; display: flex; align-items: center; justify-content: center; font-size: 14px; color: white; font-weight: bold; }
-        .content-box { display: flex; flex-direction: column; max-width: calc(100% - 50px); }
         .nickname { font-size: 11px; color: #999; margin-bottom: 2px; }
         .bubble { padding: 10px 14px; border-radius: 8px; line-height: 1.5; font-size: 15px; background: #fff; border: 0.5px solid #e7e7e7; word-break: break-all; outline: none; }
 
-        /* AI 回复下方的统计行 (仅左侧且回复完毕显示) */
+        /* AI 回复下方的统计行 */
         .usage-row { font-size: 10px; margin-top: 6px; display: none; align-items: center; gap: 10px; padding: 0 4px; }
         .token-info, .word-count { color: #bbb; }
         .token-info { flex: 1; }
@@ -30,13 +29,13 @@
         .msg.right .bubble { background: #95ec69; border: none; }
         .msg.right .avatar { background: #07c160; }
 
-        /* 发送前预览区 */
+        /* 预览区 */
         #media-preview-bar { display: none; background: #fff; padding: 10px; border-top: 1px solid #eee; align-items: center; gap: 12px; flex-shrink: 0; }
         .preview-thumb { position: relative; width: 60px; height: 60px; border: 1px solid #ddd; border-radius: 4px; }
         .preview-thumb img, .preview-thumb video { width: 100%; height: 100%; object-fit: cover; }
         .del-preview { position: absolute; top: -8px; right: -8px; background: #ff4d4f; color: #fff; width: 18px; height: 18px; border-radius: 50%; text-align: center; line-height: 16px; font-size: 12px; font-weight: bold; cursor: pointer; border: 2px solid #fff; }
 
-        /* 底部工具栏布局 */
+        /* 底部工具栏布局：⊕ | 🤖 | 输入框 | 👤 | 发送 | ⚙ */
         footer { 
             background: #f7f7f7; border-top: 1px solid var(--border-color); padding: 8px 10px; 
             display: flex; align-items: flex-end; gap: 8px; 
@@ -48,11 +47,16 @@
         
         #send-btn { background: var(--wechat-green); color: #fff; border: none; width: 58px; height: 34px; border-radius: 4px; font-size: 14px; flex-shrink: 0; white-space: nowrap; display: none; }
 
-        /* 弹窗中心 */
+        /* 弹窗样式 */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; justify-content: center; align-items: center; }
         .modal-body { background: #fff; width: 88%; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
         .modal-body input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
-        .v-button { background: #4a90e2; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        
+        /* 设置按钮组 */
+        .settings-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .v-button { flex: 1; background: #4a90e2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .save-btn { flex: 1; background: var(--wechat-green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; }
+        .get-token-btn { flex: 1; background: #576b95; color: white; text-align: center; text-decoration: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; }
 
         #model-picker { position: fixed; bottom: 85px; left: 10px; width: calc(100% - 20px); background: #fff; border-radius: 12px; z-index: 500; display: none; flex-direction: column; padding: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
         .m-opt { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid #eee; }
@@ -68,11 +72,11 @@
             <div id="thumb-render"></div>
             <div class="del-preview" onclick="clearMedia()">×</div>
         </div>
-        <div style="font-size: 12px; color: #999;">待发送</div>
+        <div style="font-size: 12px; color: #999;">待发送媒体</div>
     </div>
 
     <div id="model-picker">
-        <div style="font-weight:bold; margin-bottom:10px; font-size:14px;">联合回复模型选择</div>
+        <div style="font-weight:bold; margin-bottom:10px; font-size:14px;">群聊成员模型配置</div>
         <div id="m-wrap" style="max-height: 200px; overflow-y: auto;"></div>
         <button style="margin-top:10px; width:100%; padding:10px; background:#f0f0f0; border:none; border-radius:8px; font-weight:bold;" onclick="togglePicker()">确定</button>
     </div>
@@ -80,8 +84,13 @@
     <footer>
         <div class="icon-btn" onclick="document.getElementById('f-in').click()"><svg viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg></div>
         <div class="icon-btn" onclick="togglePicker()"><svg viewBox="0 0 24 24"><path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
-        <div id="input-msg" contenteditable="true" placeholder="聊点什么..."></div>
+        
+        <div id="input-msg" contenteditable="true" placeholder="发送内容..."></div>
+        
+        <div class="icon-btn" onclick="togglePicker()"><svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg></div>
+
         <button id="send-btn" onclick="handleSend()">发送</button>
+        
         <div class="icon-btn" onclick="toggleSettings()"><svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" fill="currentColor"/><path d="M19.43,12.98A7.79,7.79,0,0,0,19.5,12a7.79,7.79,0,0,0-.07-.98l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.61-.22l-2.49,1a7.39,7.39,0,0,0-1.69-.98l-.38-2.65A.5.5,0,0,0,14.37,2H9.63a.5.5,0,0,0-.5.42l-.38,2.65a7.39,7.39,0,0,0-1.69.98l-2.49-1a.5.5,0,0,0-.61.22l-2,3.46a.5.5,0,0,0,.12.64L4.57,11a7.79,7.79,0,0,0-.07.98a7.79,7.79,0,0,0,.07.98L2.46,14.63a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.61.22l2.49-1a7.39,7.39,0,0,0,1.69$.98l.38-2.65a.5.5,0,0,0$.5$.42h4.74a.5.5,0,0,0$.5$.42l.38-2.65a7.39,7.39,0,0,0,1.69$.98l2.49,1a.5.5,0,0,0$.61-.22l2-3.46a.5.5,0,0,0-.12-.64Z" fill="currentColor"/></svg></div>
         <input type="file" id="f-in" style="display:none" accept="image/*,video/*">
     </footer>
@@ -94,7 +103,10 @@
             <div id="v-status" style="font-size:12px; min-height:14px;"></div>
             <button class="v-button" onclick="verifyAPI()">验证 API 有效性</button>
             <input type="text" id="c-models" placeholder="常用模型 (逗号隔开)">
-            <button style="background:var(--wechat-green); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;" onclick="saveConfig()">保存并刷新列表</button>
+            <div class="settings-actions">
+                <button class="save-btn" onclick="saveConfig()">保存并刷新</button>
+                <a href="https://poixe.com/i/0v73qa" target="_blank" class="get-token-btn">获取令牌</a>
+            </div>
         </div>
     </div>
 </div>
@@ -121,7 +133,7 @@
 
     function refreshPicker() {
         const models = (localStorage.getItem('api_models') || '').split(',');
-        const wrap = document.getElementById('m-wrap'); wrap.innerHTML = '';
+        const wrap = document.getElementById('m-list'); wrap.innerHTML = '';
         models.forEach(m => { if(!m.trim()) return; wrap.innerHTML += `<label class="m-opt"><span>${m.trim()}</span><input type="checkbox" name="m-ck" value="${m.trim()}"></label>`; });
     }
 
@@ -144,8 +156,8 @@
         vS.innerText = "⏳ 探测中..."; vS.style.color = "#666";
         try {
             const resp = await fetch(`${url}/chat/completions`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }, body: JSON.stringify({ model: 'deepseek-chat:free', messages: [{role:'user', content:'hi'}], max_tokens: 1 }) });
-            if (resp.ok) { vS.innerText = "✅ API 验证成功"; vS.style.color = "green"; } else { vS.innerText = `❌ 错误: ${resp.status}`; vS.style.color = "red"; }
-        } catch (e) { vS.innerText = "❌ 无法连接地址"; vS.style.color = "red"; }
+            if (resp.ok) { vS.innerText = "✅ API 验证成功"; vS.style.color = "green"; } else { vS.innerText = `❌ 失败: ${resp.status}`; vS.style.color = "red"; }
+        } catch (e) { vS.innerText = "❌ 无法连接"; vS.style.color = "red"; }
     }
 
     function appendMsg({role, nickname, content, type='text'}) {
@@ -173,10 +185,9 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
                 body: JSON.stringify({ 
-                    model: model, 
-                    stream: false, 
+                    model: model, stream: false, 
                     messages: [
-                        { role: "system", content: "你现在是一个真实的微信群聊成员。请简短、口语化地回复。不要带有AI助手的口吻，不要说‘好的’、‘明白’、‘这是为您生成的’等废话。直接进入正题。" },
+                        { role: "system", content: "你是一个真实的微信成员。请简短回复，严禁助手口吻和废话。" },
                         { role: "user", content: msgContent }
                     ] 
                 })
@@ -190,7 +201,7 @@
                     countSpan.innerText = `字数: ${txt.length}`;
                     usageRow.style.display = 'flex';
                 }
-            } else { bubble.innerText = "API 响应异常: " + JSON.stringify(d.error || d); }
+            } else { bubble.innerText = "API 异常"; }
         } catch(e) { bubble.innerText = "请求失败"; }
         mList.scrollTop = mList.scrollHeight;
     }
