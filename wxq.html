@@ -15,81 +15,70 @@
             --text-sub: #888;
         }
 
+        /* 基础重置 */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html {
-            margin: 0; padding: 0; height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background-color: #000; /* PC端背景 */
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+            background-color: var(--wechat-bg);
+            overflow: hidden; /* 防止页面整体抖动 */
         }
 
-        /* 主容器 - 默认手机样式（占满全屏） */
+        /* 主容器：强制手机端全屏 */
         #chat-wrapper {
             display: flex; flex-direction: column; 
             height: 100vh; width: 100%;
-            margin: 0 auto; background-color: var(--wechat-bg);
-            position: relative; overflow: hidden;
+            background-color: var(--wechat-bg);
         }
 
-        /* 电脑端适配：宽度限制并居中 */
-        @media (min-width: 768px) {
-            #chat-wrapper {
-                width: 450px; 
-                height: 90vh;
-                margin-top: 5vh;
-                border-radius: 8px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            }
-        }
-
-        /* 顶部导航 */
+        /* 顶部导航：还原截图 */
         header {
             background: var(--wechat-header);
-            height: 50px; display: flex; align-items: center; justify-content: center;
-            font-weight: 500; font-size: 16px; border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0; z-index: 10;
+            height: 50px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 15px; border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0; font-size: 16px; font-weight: 500;
         }
 
-        /* 消息区域 */
+        /* 消息列表：增加滚动流畅度 */
         #message-list {
             flex: 1; overflow-y: auto; padding: 15px;
             display: flex; flex-direction: column; gap: 20px;
-            padding-bottom: 30px;
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* 消息基础样式 */
-        .msg { display: flex; align-items: flex-start; gap: 10px; max-width: 92%; }
+        /* 消息样式 */
+        .msg { display: flex; align-items: flex-start; gap: 10px; max-width: 90%; }
         .avatar {
             width: 42px; height: 42px; border-radius: 4px; flex-shrink: 0;
-            background-color: #ccc; display: flex; align-items: center;
-            justify-content: center; color: white; font-weight: bold; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold; font-size: 14px;
         }
         .content-box { display: flex; flex-direction: column; max-width: calc(100% - 52px); }
-        .nickname { font-size: 12px; color: var(--text-sub); margin-bottom: 4px; }
+        .nickname { font-size: 12px; color: #fa9d3b; margin-bottom: 4px; } /* 模拟截图中橙色昵称 */
         
         .bubble {
             padding: 10px 12px; border-radius: 6px; position: relative;
-            line-height: 1.5; word-break: break-all; font-size: 15px;
-            background: #fff; border: 1px solid #e7e7e7; color: var(--text-main);
+            line-height: 1.5; font-size: 15px; background: #fff;
+            color: var(--text-main); border: 0.5px solid #e7e7e7;
         }
 
-        /* 引用内容样式 (核心：模仿截图) */
+        /* 媒体消息样式 */
+        .media-content { max-width: 200px; border-radius: 4px; display: block; }
+        .audio-player { width: 180px; height: 35px; }
+
+        /* 引用框 */
         .quote-content {
             background: var(--quote-bg); padding: 8px; border-radius: 4px;
             font-size: 12px; color: #666; margin-top: 4px;
-            border-left: 0px; display: -webkit-box; -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical; overflow: hidden;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
 
-        /* 图片消息 */
-        .img-msg { max-width: 200px; max-height: 300px; border-radius: 4px; display: block; cursor: pointer; }
-
-        /* 布局区分 */
+        /* 左右对齐 */
         .msg.left { align-self: flex-start; }
         .msg.left .bubble::before {
             content: ""; position: absolute; left: -10px; top: 10px;
             border: 5px solid transparent; border-right-color: #fff;
         }
-
         .msg.right { align-self: flex-end; flex-direction: row-reverse; }
         .msg.right .nickname { display: none; }
         .msg.right .bubble { background: var(--wechat-green); border: none; }
@@ -98,44 +87,53 @@
             border: 5px solid transparent; border-left-color: var(--wechat-green);
         }
 
-        /* 引用输入预览 */
+        /* 底部工具栏：还原截图布局 */
+        footer {
+            background: #f7f7f7; border-top: 1px solid var(--border-color);
+            display: flex; flex-direction: column; flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
         #quote-preview {
             background: #eee; padding: 6px 15px; font-size: 12px; color: #666;
-            display: none; border-top: 1px solid #ddd; justify-content: space-between;
+            display: none; justify-content: space-between; align-items: center;
         }
 
-        /* 底部输入框 */
-        footer {
-            background: #f7f7f7; padding: 10px; display: flex; align-items: center;
-            gap: 8px; border-top: 1px solid var(--border-color);
-            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        .input-bar {
+            display: flex; align-items: center; padding: 8px 10px; gap: 10px;
         }
-        .icon-btn { font-size: 26px; color: #333; cursor: pointer; flex-shrink: 0; }
+
+        .icon-btn { font-size: 24px; color: #333; cursor: pointer; flex-shrink: 0; }
+        
         #input-msg {
             flex: 1; border: none; padding: 10px; border-radius: 6px;
-            outline: none; font-size: 16px; background: #fff;
-        }
-        #send-btn {
-            background: #07c160; color: #fff; border: none; padding: 8px 15px;
-            border-radius: 4px; cursor: pointer; font-size: 14px; display: none;
+            outline: none; font-size: 16px; background: #fff; min-height: 40px;
         }
 
-        /* 模拟微信拍一拍/系统消息 */
+        #send-btn {
+            background: #07c160; color: #fff; border: none; padding: 8px 12px;
+            border-radius: 4px; font-size: 14px; display: none;
+        }
+
         .sys-msg { align-self: center; font-size: 12px; color: #b2b2b2; margin: 10px 0; }
     </style>
 </head>
 <body>
 
 <div id="chat-wrapper">
-    <header>AI 旅行者 | 深度群聊(3)</header>
+    <header>
+        <span>‹ 1</span>
+        <span>AI旅行者 | 深度群聊(179)</span>
+        <span>···</span>
+    </header>
     
     <div id="message-list">
-        <div class="sys-msg">"DeepSeek" 加入了群聊</div>
-        <div class="msg left" onclick="selectForQuote('DeepSeek', '我是 DeepSeek，发图或 @我 试试吧')">
+        <div class="sys-msg">13:53</div>
+        <div class="msg left" onclick="selectForQuote('DeepSeek', '发个视频或音频试试？')">
             <div class="avatar" style="background:#4a90e2">D</div>
             <div class="content-box">
-                <div class="nickname">DeepSeek</div>
-                <div class="bubble">欢迎！你可以长按或点击我这条消息来“引用”。发送图片后 @我，我会为你分析。</div>
+                <div class="nickname">DeepSeek @ 上海稀宇</div>
+                <div class="bubble">欢迎！我现在支持分析图片、音频和视频了。点击右侧的 ⊕ 即可上传。</div>
             </div>
         </div>
     </div>
@@ -146,10 +144,12 @@
     </div>
 
     <footer>
-        <span class="icon-btn" onclick="document.getElementById('file-input').click()">⊕</span>
-        <input type="file" id="file-input" style="display:none" accept="image/*">
-        <input type="text" id="input-msg" placeholder="发送消息..." autocomplete="off">
-        <button id="send-btn">发送</button>
+        <div class="input-bar">
+            <span class="icon-btn">🌐</span> <input type="text" id="input-msg" placeholder="" autocomplete="off">
+            <span class="icon-btn">☺</span> <span class="icon-btn" onclick="document.getElementById('file-input').click()">⊕</span>
+            <button id="send-btn">发送</button>
+        </div>
+        <input type="file" id="file-input" style="display:none" accept="image/*,video/*,audio/*">
     </footer>
 </div>
 
@@ -163,17 +163,16 @@
 
     let currentQuote = null;
 
-    // 监听输入框控制发送按钮显示
+    // 自动显示/隐藏发送按钮
     input.addEventListener('input', () => {
         btn.style.display = input.value.trim() ? 'block' : 'none';
+        // 微信逻辑：输入文字时隐藏加号图标（此处为简化，保留加号）
     });
 
-    // 选择引用
     function selectForQuote(user, text) {
         currentQuote = { user, text };
         quoteBar.style.display = 'flex';
-        quoteInfo.innerText = `引用 ${user}：${text.substring(0, 15)}${text.length > 15 ? '...' : ''}`;
-        input.focus();
+        quoteInfo.innerText = `${user}: ${text.substring(0, 20)}...`;
     }
 
     function cancelQuote() {
@@ -181,21 +180,25 @@
         quoteBar.style.display = 'none';
     }
 
-    // 添加消息到界面
     function appendMessage({role, nickname, content, type = 'text', avatar, color, quote}) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `msg ${role}`;
         
-        // 允许后续引用这条消息
-        const rawContent = type === 'text' ? content : '[图片]';
+        const rawContent = type === 'text' ? content : `[${type}]`;
         msgDiv.onclick = () => selectForQuote(nickname, rawContent);
 
-        let bodyHtml = type === 'text' ? 
-            `<div class="bubble">${content}</div>` : 
-            `<div class="bubble" style="background:none; border:none; padding:0"><img src="${content}" class="img-msg"></div>`;
+        let bodyHtml = '';
+        if (type === 'text') {
+            bodyHtml = `<div class="bubble">${content}</div>`;
+        } else if (type === 'image') {
+            bodyHtml = `<div class="bubble" style="background:none;border:none;padding:0"><img src="${content}" class="media-content"></div>`;
+        } else if (type === 'video') {
+            bodyHtml = `<div class="bubble" style="background:none;border:none;padding:0"><video src="${content}" controls class="media-content"></video></div>`;
+        } else if (type === 'audio') {
+            bodyHtml = `<div class="bubble"><audio src="${content}" controls class="audio-player"></audio></div>`;
+        }
 
-        let quoteHtml = quote ? 
-            `<div class="quote-content">${quote.user}：${quote.text}</div>` : '';
+        let quoteHtml = quote ? `<div class="quote-content">${quote.user}：${quote.text}</div>` : '';
 
         msgDiv.innerHTML = `
             <div class="avatar" style="background:${color}">${avatar}</div>
@@ -207,37 +210,23 @@
         `;
         
         msgList.appendChild(msgDiv);
-        // 自动滚动到底部
-        setTimeout(() => {
-            msgList.scrollTo({ top: msgList.scrollHeight, behavior: 'smooth' });
-        }, 100);
+        setTimeout(() => { msgList.scrollTop = msgList.scrollHeight; }, 100);
     }
 
-    // 发送逻辑
     function handleSend() {
         const text = input.value.trim();
         if (!text) return;
 
-        // 1. 发送我的消息
         appendMessage({
-            role: 'right',
-            nickname: '我',
-            content: text,
-            avatar: '我',
-            color: '#07c160',
-            quote: currentQuote
+            role: 'right', nickname: '我', content: text,
+            avatar: 'Me', color: '#07c160', quote: currentQuote
         });
 
-        // 2. 模拟 AI 逻辑 (@DeepSeek 或 @所有人)
-        if (text.includes('@DeepSeek') || text.includes('@所有人')) {
+        if (text.includes('@所有人') || text.includes('@DeepSeek')) {
             setTimeout(() => {
                 appendMessage({
-                    role: 'left',
-                    nickname: 'DeepSeek',
-                    content: '收到指令。正在分析当前讨论的内容...',
-                    avatar: 'D',
-                    color: '#4a90e2',
-                    quote: { user: '我', text: text } // AI 自动引用你
+                    role: 'left', nickname: 'DeepSeek', content: '收到，正在分析您的多媒体请求...',
+                    avatar: 'D', color: '#4a90e2'
                 });
             }, 1000);
         }
@@ -247,27 +236,32 @@
         cancelQuote();
     }
 
-    // 图片处理
     fileInput.onchange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                appendMessage({
-                    role: 'right', nickname: '我', content: ev.target.result, 
-                    type: 'image', avatar: '我', color: '#07c160'
-                });
+        if (!file) return;
+
+        const reader = new FileReader();
+        const type = file.type.split('/')[0]; // image, video, or audio
+
+        reader.onload = (ev) => {
+            appendMessage({
+                role: 'right', nickname: '我', content: ev.target.result, 
+                type: type, avatar: 'Me', color: '#07c160'
+            });
+            
+            // 模拟 AI 识别各种媒体
+            setTimeout(() => {
+                let aiText = `已接收并识别该${type}文件。`;
+                if(type === 'video') aiText = "该视频内容已解析，画面流畅，包含关键帧信息。";
+                if(type === 'audio') aiText = "音频波形正常，正在为您进行语音转文字...";
                 
-                // 模拟图片识别回复
-                setTimeout(() => {
-                    appendMessage({
-                        role: 'left', nickname: 'DeepSeek', content: '@所有人 识别到一张新图片，看起来很专业，需要我详细解读吗？',
-                        avatar: 'D', color: '#4a90e2'
-                    });
-                }, 1500);
-            };
-            reader.readAsDataURL(file);
-        }
+                appendMessage({
+                    role: 'left', nickname: 'DeepSeek', content: aiText,
+                    avatar: 'D', color: '#4a90e2'
+                });
+            }, 1500);
+        };
+        reader.readAsDataURL(file);
     };
 
     btn.onclick = handleSend;
